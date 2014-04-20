@@ -3,7 +3,7 @@
   <head>
     <title>Title</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
   </head>
   <body>
     <textarea id="source">
@@ -19,11 +19,11 @@ class: center, middle
 ##tumblr: [dordille.tumblr.com](http://dordille.tumblr.com) [stuffdanhates.tumblr.com](http://stuffdanhates.tumblr.com)
 ##twitter: [@danordille](http://www.twitter.com/danordille) or @danordillehatestwitter
 ##github: [github](https://github.com/dordille)
-![motz](/images/motz.gif)
+![motz](images/motz.gif)
 ---
 ## [Pozaic](http://pozaic.com)
 ## Made By [@danordille](http://www.twitter.com/danordille) [@dcmotz](http://www.twitter.com/dcmotz) [@aharonwasserman](http://www.twitter.com/aharonwasserman)
-![pozaic1](/images/pozaic1.jpg)
+![pozaic1](images/pozaic1.jpg)
 
 ---
 # Tools
@@ -36,7 +36,7 @@ class: center, middle
 
 ]
 .right-column[
-![pozaic1](/images/pozaic2.gif)
+![pozaic1](images/pozaic2.gif)
 ]
 
 
@@ -61,7 +61,7 @@ document.getElementById('button1').onclick = function() {
   navigator.getUserMedia({video: true, audio: false}, camSuccess, camFailure);
 }
 ```
-![cani](/images/navigator_use.png)
+![cani](images/navigator_use.png)
 ---
 # Demo
 <button id="button1">Click</button>
@@ -74,7 +74,7 @@ document.getElementById('button1').onclick = function() {
 * ## Answer the Call
 * ## Handle Answer
 
-![cani](/images/navigator_use.png)
+![cani](images/navigator_use.png)
 ---
 
 # Initialize the Call
@@ -89,7 +89,7 @@ cpc.createOffer(function(offer) {
 });
 ```
 .center[
-![punk](/images/punk.gif)
+![punk](images/punk.gif)
 ]
 
 ---
@@ -120,7 +120,7 @@ server.getAnswer(function(answer) {
 });
 ```
 .center[
-![nf](/images/nf.gif)
+![nf](images/nf.gif)
 ]
 ---
 # What about this server???
@@ -219,12 +219,12 @@ document.getElementById('make-gif').onclick = function() {
 ```
 
     </textarea>
-    <script src="/js/vendor.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
     <script src="http://gnab.github.io/remark/downloads/remark-latest.min.js" type="text/javascript"></script>
+    <script src="scripts/gif.js" type="text/javascript"></script>
     <script type="text/javascript">
       var slideshow = remark.create();
     </script>
-    <script src="/js/peer.js"></script>
+    <script src="scripts/peer.js"></script>
   </body>
 </html>

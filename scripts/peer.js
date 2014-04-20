@@ -128,7 +128,7 @@ function demo_2() {
   var gif = new GIF({
     workers: 2,
     quality: 10,
-    workerScript: '/scripts/gif.worker.js'
+    workerScript: 'scripts/gif.worker.js'
   });
 
   document.getElementById('capture-streams').onclick = function() {
