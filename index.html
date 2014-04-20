@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+# Cooperative GIFs With WebRTC
+
+---
+#Dan Ordille
+
+##work: [Tumblr](http://www.tumblr.com/jobs)
+##tumblr: [dordille.tumblr.com](http://dordille.tumblr.com) [stuffdanhates.tumblr.com](http://stuffdanhates.tumblr.com)
+##twitter: [@danordille](http://www.twitter.com/danordille) or @danordillehatestwitter
+##github: [github](https://github.com/dordille)
+![motz](/images/motz.gif)
+---
+## [Pozaic](http://pozaic.com)
+## Made By [@danordille](http://www.twitter.com/danordille) [@dcmotz](http://www.twitter.com/dcmotz) [@aharonwasserman](http://www.twitter.com/aharonwasserman)
+![pozaic1](/images/pozaic1.jpg)
+
+---
+# Tools
+.left-column[
+## Navigator.getUserMedia
+## RTCPeerConnection
+## RTCDataChannel
+## Canvas
+## Gifjs
+
+]
+.right-column[
+![pozaic1](/images/pozaic2.gif)
+]
+
+
+
+---
+
+# navigator.getUserMedia
+## Usage
+```javascript
+navigator.getUserMedia ( constraints, successCallback, errorCallback );
+```
+## Example
+```javascript
+function camSucces(localMediaStream) {
+  var video = document.getElementById('video1')
+  video.src = window.URL.createObjectURL(localMediaStream);
+}
+function camFailure() {
+  alert('Failure');
+}
+document.getElementById('button1').onclick = function() {
+  navigator.getUserMedia({video: true, audio: false}, camSuccess, camFailure);
+}
+```
+![cani](/images/navigator_use.png)
+---
+# Demo
+<button id="button1">Click</button>
+<video id="video1" autoplay></video>
+---
+
+# RTCPeerConnection [MDN](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection)
+* ## Get localMediaStream via webRTC
+* ## Initialize the Call
+* ## Answer the Call
+* ## Handle Answer
+
+![cani](/images/navigator_use.png)
+---
+
+# Initialize the Call
+```javascript
+var cpc = new RTCPeerConnection(null);
+cpc.addStream(stream);
+cpc.createOffer(function(offer) {
+  cpc.setLocalDescription(new RTCSessionDescription(offer), function() {
+    console.log("[Callee] Sending offer: ", offer);
+    server.sendOffer(offer);
+  });
+});
+```
+.center[
+![punk](/images/punk.gif)
+]
+
+---
+
+# Answer the Call
+```javascript
+var apc = new RTCPeerConnection(null);
+apc.addStream(stream);
+server.getOffer(function(offer) {
+  console.log('[Answeree] Recieved offer:', offer);
+  apc.setRemoteDescription(new RTCSessionDescription(offer), function() {
+    apc.createAnswer(function(answer) {
+      apc.setLocalDescription(new RTCSessionDescription(answer), function() {
+        console.log('[Answeree] Sending answer:', answer);
+        server.sendAnswer(answer);
+      });
+    });
+  });
+});
+```
+---
+
+# Handle Answer
+```javascript
+server.getAnswer(function(answer) {
+  console.log('[Callee] Recieved answer:', answer);
+  cpc.setRemoteDescription(new RTCSessionDescription(answer)); 
+});
+```
+.center[
+![nf](/images/nf.gif)
+]
+---
+# What about this server???
+For now we can cheat mock it, sockets work good for making a real server.
+```javascript
+var server = {
+  offerDef: $.Deferred(),
+  answerDef: $.Deferred(),
+  sendOffer: function(offer) {
+    this.offer = offer;
+    this.offerDef.resolve(offer);
+  },
+  getOffer: function(fn) {
+    this.offerDef.promise().done(fn);
+  },
+  sendAnswer: function(answer) {
+    this.answer = answer;
+    this.answerDef.resolve(answer);
+  },
+  getAnswer: function(fn) {
+    this.answerDef.promise().done(fn);
+  }
+}
+```
+---
+# Example
+
+<button id="init">Initialize Streams</button><button id="call">Call</button><button id="capture-streams">Capture</button><button id="make-gif">Make Gif</button>
+## Caller
+<div style="float:left;width:780px">
+  <div id="callee"></div>
+</div>
+
+## Answerer
+<div style="float:left;width:780px">
+  <div id="answeree"></div>
+</div>
+---
+# Capturing Video Data To Canvas
+<div style="float:left;width:320px">
+  <button id="start-capture">Start</button>
+  <video id="video-capture" autoplay width="300" height="200"></video>
+</div>
+<div style="float:right;width:320px">
+  <button id="button-capture">Capture</button>
+  <canvas id="canvas-capture" width="300" height="200">
+</div>
+---
+# Codes
+```javascript
+document.getElementById('start-capture').onclick = function() {
+  var video = document.getElementById('video-capture');
+  function camSuccess(localMediaStream) {
+    video.src = window.URL.createObjectURL(localMediaStream);
+  }
+  function camFailure() {
+    alert('Failure');
+  }
+  navigator.webkitGetUserMedia({video: true, audio: false}, 
+    camSuccess, camFailure);
+
+  var canvas = document.getElementById('canvas-capture');
+  var ctx = canvas.getContext("2d");
+
+  document.getElementById('button-capture').onclick = function() {
+    ctx.drawImage(video, 0, 0, 300, 200);
+  }
+}
+```
+---
+# Creating A Gif From Multiple Video Streams
+```javascript
+var gif = new GIF({
+  workers: 2,
+  quality: 10,
+  workerScript: '/workers/gif.worker.js'
+});
+
+document.getElementById('capture-streams').onclick = function() {
+  var canvas = document.createElement('canvas');
+  canvas.width = 600;
+  canvas.height = 300;
+  var ctx = canvas.getContext('2d');
+  var callee = document.getElementById("callee");
+  ctx.drawImage(callee.children[0], 0, 0, 300, 300);
+  ctx.drawImage(callee.children[1], 300, 0, 300, 300);
+  gif.addFrame(canvas, {delay: 200});
+}
+document.getElementById('make-gif').onclick = function() {
+  gif.on('finished', function(blob) {
+    window.open(URL.createObjectURL(blob));
+  });
+
+  gif.render();
+}
+```
+
+    </textarea>
+    <script src="/js/vendor.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script src="http://gnab.github.io/remark/downloads/remark-latest.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      var slideshow = remark.create();
+    </script>
+    <script src="/js/peer.js"></script>
+  </body>
+</html>
